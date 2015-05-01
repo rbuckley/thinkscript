@@ -1,15 +1,19 @@
 
 declare lower;
-input optionSeriesPrefix = ".AAPL110319";
+
+input optionExpiration = "150515";
 input strike = 260.0;
 input strikeSpacing = 10.0;
 input mode = {default volume, totalVolume, openInterest, volumePercentOI};
 input totalStrikes = {default Five, Three, One};
 
+
 def showThree = if mode == mode.volume and totalStrikes == totalStrikes.Three then 1 else 0;
 def showFive = if  mode == mode.volume and totalStrikes == totalStrikes.Five then 1 else 0;
 
-AddLabel(yes, optionSeriesPrefix, Color.WHITE);
+AddLabel(yes, Concat(Concat(".", GetSymbol()), optionExpiration));
+
+AddLabel(yes,  Concat(Concat(".", GetSymbol()), optionExpiration), Color.WHITE);
 AddLabel(yes, Concat(strike, "P"), Color.RED);
 AddLabel(showThree or showFive, Concat(strike - strikeSpacing, "P"), Color.MAGENTA);
 AddLabel(showThree or showFive, Concat(strike + strikeSpacing, "P"), Color.ORANGE);
@@ -21,50 +25,50 @@ AddLabel(showThree or showFive, Concat(strike + strikeSpacing, "C"), Color.BLUE)
 AddLabel(showFive, Concat(strike - strikeSpacing - strikeSpacing, "C"), Color.LIME);
 AddLabel(showFive, Concat(strike + strikeSpacing + strikeSpacing, "C"), Color.WHITE);
 
-def putOptionVolume =  if IsNaN(volume(Concat(optionSeriesPrefix, Concat("P", strike)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("P", strike)));
+def putOptionVolume =  if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike)));
 rec cumPutVolume = cumPutVolume[1] + putOptionVolume;
-def totalputOptionVolume = volume(Concat(optionSeriesPrefix, Concat("P", strike)), "DAY");
-def putOptionOI = open_interest(Concat(optionSeriesPrefix, Concat("P", strike)), "DAY");
-def callOptionVolume = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("C", strike)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("C", strike)));
+def totalputOptionVolume = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike)), "DAY");
+def putOptionOI = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike)), "DAY");
+def callOptionVolume = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike)));
 rec cumCallVolume = cumCallVolume[1] + callOptionVolume;
-def totalcallOptionVolume = volume(Concat(optionSeriesPrefix, Concat("C", strike)), "DAY");
-def callOptionOI = open_interest(Concat(optionSeriesPrefix, Concat("C", strike)), "DAY");
+def totalcallOptionVolume = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike)), "DAY");
+def callOptionOI = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike)), "DAY");
 
-def putOptionVolume1 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing)));
+def putOptionVolume1 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing)));
 rec cumPutVolume1 = cumPutVolume1[1] + putOptionVolume1;
-def totalputOptionVolume1 = volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing)), "DAY");
-def putOptionOI1 = open_interest(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing)), "DAY");
-def callOptionVolume1 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing)));
+def totalputOptionVolume1 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing)), "DAY");
+def putOptionOI1 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing)), "DAY");
+def callOptionVolume1 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing)));
 rec cumCallVolume1 = cumCallVolume1[1] + callOptionVolume1;
-def totalcallOptionVolume1 = volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing)), "DAY");
-def callOptionOI1 = open_interest(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing)), "DAY");
+def totalcallOptionVolume1 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing)), "DAY");
+def callOptionOI1 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing)), "DAY");
 
-def putOptionVolume2 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing)));
+def putOptionVolume2 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing)));
 rec cumPutVolume2 = cumPutVolume2[1] + putOptionVolume2;
-def totalputOptionVolume2 = volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing)), "DAY");
-def putOptionOI2 = open_interest(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing)), "DAY");
-def callOptionVolume2 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing)));
+def totalputOptionVolume2 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing)), "DAY");
+def putOptionOI2 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing)), "DAY");
+def callOptionVolume2 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing)));
 rec cumCallVolume2 = cumCallVolume2[1] + callOptionVolume2;
-def totalcallOptionVolume2 = volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing)), "DAY");
-def callOptionOI2 = open_interest(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing)), "DAY");
+def totalcallOptionVolume2 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing)), "DAY");
+def callOptionOI2 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing)), "DAY");
 
-def putOptionVolume3 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing - strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing - strikeSpacing)));
+def putOptionVolume3 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing - strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing - strikeSpacing)));
 rec cumPutVolume3 = cumPutVolume3[1] + putOptionVolume3;
-def totalputOptionVolume3 = volume(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing - strikeSpacing)), "DAY");
-def putOptionOI3 = open_interest(Concat(optionSeriesPrefix, Concat("P", strike - strikeSpacing - strikeSpacing)), "DAY");
-def callOptionVolume3 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing - strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing - strikeSpacing)));
+def totalputOptionVolume3 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing - strikeSpacing)), "DAY");
+def putOptionOI3 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike - strikeSpacing - strikeSpacing)), "DAY");
+def callOptionVolume3 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing - strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing - strikeSpacing)));
 rec cumCallVolume3 = cumCallVolume3[1] + callOptionVolume3;
-def totalcallOptionVolume3 = volume(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing - strikeSpacing)), "DAY");
-def callOptionOI3 = open_interest(Concat(optionSeriesPrefix, Concat("C", strike - strikeSpacing - strikeSpacing)), "DAY");
+def totalcallOptionVolume3 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing - strikeSpacing)), "DAY");
+def callOptionOI3 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike - strikeSpacing - strikeSpacing)), "DAY");
 
-def putOptionVolume4 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing + strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing + strikeSpacing)));
+def putOptionVolume4 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing + strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing + strikeSpacing)));
 rec cumPutVolume4 = cumPutVolume4[1] + putOptionVolume4;
-def totalputOptionVolume4 = volume(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing + strikeSpacing)), "DAY");
-def putOptionOI4 = open_interest(Concat(optionSeriesPrefix, Concat("P", strike + strikeSpacing + strikeSpacing)), "DAY");
-def callOptionVolume4 = if IsNaN(volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing + strikeSpacing)))) then 0 else volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing + strikeSpacing)));
+def totalputOptionVolume4 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing + strikeSpacing)), "DAY");
+def putOptionOI4 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("P", strike + strikeSpacing + strikeSpacing)), "DAY");
+def callOptionVolume4 = if IsNaN(volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing + strikeSpacing)))) then 0 else volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing + strikeSpacing)));
 rec cumCallVolume4 = cumCallVolume4[1] + callOptionVolume4;
-def totalcallOptionVolume4 = volume(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing + strikeSpacing)), "DAY");
-def callOptionOI4 = open_interest(Concat(optionSeriesPrefix, Concat("C", strike + strikeSpacing + strikeSpacing)), "DAY");
+def totalcallOptionVolume4 = volume(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing + strikeSpacing)), "DAY");
+def callOptionOI4 = open_interest(Concat( Concat(Concat(".", GetSymbol()), optionExpiration), Concat("C", strike + strikeSpacing + strikeSpacing)), "DAY");
 
 plot zero = 0;
 zero.SetDefaultColor(Color.WHITE);
