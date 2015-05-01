@@ -7,13 +7,43 @@ input strikeSpacing = 10.0;
 input mode = {default volume, totalVolume, openInterest, volumePercentOI};
 input totalStrikes = {default Five, Three, One};
 
+def series = 1;
+def CurrentYear = getYear();
+def CurrentMonth = getMonth();
+def CurrentDOM = getDayOfMonth(getYyyyMmDd());
+
+def Day1DOW1 = getDayOfWeek(CurrentYear * 10000 + CurrentMonth * 100 + 1);
+def FirstFridayDOM1 = if Day1DOW1 < 6
+    then 6 - Day1DOW1
+    else if Day1DOW1 == 6
+        then 7
+        else 6;
+def RollDOM = FirstFridayDOM1 + 14;
+def ExpMonth1 = if RollDOM > CurrentDOM
+    then CurrentMonth + series - 1
+    else CurrentMonth + series;
+def ExpMonth2 = if ExpMonth1 > 12
+    then ExpMonth1 - 12
+    else ExpMonth1;
+def ExpYear = if ExpMonth1 > 12
+    then CurrentYear + 1
+    else CurrentYear;
+def Day1DOW = getDayOfWeek(ExpYear * 10000 + ExpMonth2 * 100 + 1);
+def FirstFridayDOM = if Day1DOW < 6
+    then 6 - Day1DOW
+    else if Day1DOW == 6
+        then 7
+        else 6;
+def ExpDOM = FirstFridayDOM + 14;
+
+
+#def dynamicOptionExp = Concat(Concat(ExpYear, ExpMonth2), ExpDOM);
 
 def showThree = if mode == mode.volume and totalStrikes == totalStrikes.Three then 1 else 0;
 def showFive = if  mode == mode.volume and totalStrikes == totalStrikes.Five then 1 else 0;
 
-AddLabel(yes, Concat(Concat(".", GetSymbol()), optionExpiration));
+AddLabel(yes,  Concat(Concat(".", GetSymbol()), Concat(Concat(ExpYear-2000, IF ExpMonth2 < 10 THEN Concat("0", ExpMonth2) ELSE Concat("", ExpMonth2)), IF ExpDOM < 10 THEN Concat("0", ExpDOM) ELSE Concat("", ExpDOM))), Color.WHITE);
 
-AddLabel(yes,  Concat(Concat(".", GetSymbol()), optionExpiration), Color.WHITE);
 AddLabel(yes, Concat(strike, "P"), Color.RED);
 AddLabel(showThree or showFive, Concat(strike - strikeSpacing, "P"), Color.MAGENTA);
 AddLabel(showThree or showFive, Concat(strike + strikeSpacing, "P"), Color.ORANGE);
